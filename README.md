@@ -45,15 +45,17 @@ Description: The reward at each step depends on whether the agent's action match
 Representation: The reward is a random number drawn from a normal distribution. The mean (loc) of the distribution is 1 if the agent's action matches the actual label, and -1 otherwise. The standard deviation (scale) of the distribution is 0.1. This introduces variability in the rewards the agent receives, even if it takes the same action in the same state.
 
 DQN Agent 
+
 Policy (π)
-The agent uses an ε-greedy strategy to balance exploration and exploitation. If a random number is less than or equal to ε (self.epsilon), it will take a random action (exploration). Otherwise, it uses the neural network (self.model) to predict Q-values for each action given the current state and then selects the action with the highest Q-value (exploitation).
-The ε value starts high (1.0) and decays over time as per self.epsilon_decay until it reaches a minimum value (self.epsilon_min). This ensures that the agent starts by exploring widely and gradually shifts to exploiting what it has learned.
+
+- The agent uses an ε-greedy strategy to balance exploration and exploitation. If a random number is less than or equal to ε (self.epsilon), it will take a random action (exploration). Otherwise, it uses the neural network (self.model) to predict Q-values for each action given the current state and then selects the action with the highest Q-value (exploitation).
+- The ε value starts high (1.0) and decays over time as per self.epsilon_decay until it reaches a minimum value (self.epsilon_min). This ensures that the agent starts by exploring widely and gradually shifts to exploiting what it has learned.
 Q-value Approximation
-The Q-values, which represent the expected future rewards of state-action pairs, are approximated using a neural network.
-The network has an input layer corresponding to the state size, two hidden layers each with 24 neurons and ReLU activation, and an output layer with a neuron for each action. The output layer uses a linear activation function to predict the Q-values.
+- The Q-values, which represent the expected future rewards of state-action pairs, are approximated using a neural network.
+- The network has an input layer corresponding to the state size, two hidden layers each with 24 neurons and ReLU activation, and an output layer with a neuron for each action. The output layer uses a linear activation function to predict the Q-values.
 Learning (Bellman Equation)
-The replay method captures the essence of Q-learning. Here, the agent samples a minibatch of experiences from its memory and updates its Q-values based on the Bellman equation.
-For each experience in the minibatch, the agent computes the target Q-value as:
+- The replay method captures the essence of Q-learning. Here, the agent samples a minibatch of experiences from its memory and updates its Q-values based on the Bellman equation.
+- For each experience in the minibatch, the agent computes the target Q-value as:
 Q(next_state,a) If the episode has terminated (done is True), the target is simply the reward. This is because there are no future rewards to consider once the episode has ended.
 The computed target Q-values are then used to update the neural network model.
 Experience Replay
