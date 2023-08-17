@@ -41,7 +41,8 @@ Actions (A):
 - - 1: Alert
 - Representation: 
 - -It's defined by the action_space attribute as a discrete space with 2 actions.
-- Transitions (P):
+
+Transitions (P):
 - Description: Transition dynamics are deterministic in terms of the state sequence (it processes through the dataset sequentially), but the reward has stochastic elements.
 - Representation: The environment uses self.current_data_pointer to keep track of the current position in the dataset. After each step, it moves to the next data point, and if it reaches the end of the dataset, the episode terminates (complete becomes True).
 
