@@ -92,12 +92,17 @@ class IDSEnvironment(gym.Env):
 
         # Move the data pointer
         self.current_data_pointer += 1
-        complete = self.current_data_pointer >= len(self.train_data)
+
+        # complete = self.current_data_pointer >= len(self.train_data)
+
+        complete = self.current_data_pointer >= 100
 
         return self.state, curr_reward, complete, {}
 
     def reset(self, *args, **kwargs):
         self.state = self.discretize_state(self.train_data.iloc[0, :-1].values)
+
+        self.current_data_pointer = 0
 
         seed = kwargs.get('seed', None)
         options = kwargs.get('options', None)
@@ -128,7 +133,10 @@ class DQNAgent:
 
         self.memory = []
         self.gamma = 0.95  # discount rate
-        self.epsilon = 1.0  # exploration rate
+        # self.epsilon = 1.0  # exploration rate
+
+        self.epsilon = 0.1
+
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.learning_rate = 0.001
@@ -153,27 +161,8 @@ class DQNAgent:
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
 
-        act_values = self.model.predict(state)
+        act_values = self.model.predict(state, verbose=0)
         return np.argmax(act_values[0])  # returns action
-
-    def replay(self):
-        if len(self.memory) < self.batch_size:
-            return
-
-        minibatch = random.sample(self.memory, self.batch_size)
-        for state, action, reward, next_state, done in minibatch:
-            state = np.reshape(state, [1, self.state_size])
-            next_state = np.reshape(next_state, [1, self.state_size])
-
-            target = reward
-            if not done:
-                target = (reward + self.gamma * np.amax(self.model.predict(next_state)[0]))
-            target_f = self.model.predict(state)
-            target_f[0][action] = target
-            self.model.train_on_batch(state, target_f)
-
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
 
     def train(self, experiences):
         # Extract experiences
@@ -187,8 +176,8 @@ class DQNAgent:
         dones = np.array(dones)
 
         # Compute the Q-values for the current states and next states
-        q_values = self.model.predict(states)
-        next_q_values = self.model.predict(next_states)
+        q_values = self.model.predict(states, verbose=0)
+        next_q_values = self.model.predict(next_states, verbose=0)
 
         # Compute the target Q-values
         targets = rewards + self.gamma * np.max(next_q_values, axis=1) * (1 - dones)
@@ -232,6 +221,8 @@ def train_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
         curr_state = np.reshape(curr_state, [1, state_size])  # Reshape for the DNN
         total_reward = 0  # Reset total_reward for the episode
         complete = False
+
+        print(f'Episode {episode}')
 
         while not complete:
             curr_action = agent.act(curr_state)  # Decide action
