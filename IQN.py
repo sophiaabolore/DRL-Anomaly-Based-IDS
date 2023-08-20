@@ -79,23 +79,23 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
 
         self.model.train_on_batch(states,
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
+        loss = self.model.train_on_batch(states,
+                                         targets.reshape(-1, self.action_size * self.num_quantiles))
+        return loss
 
-
-def train_iqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
+def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
     memory_buffer = ReplayBuffer(capacity=1000)
 
     rewards = []
-
     # Training
     for episode in range(num_episodes):
         curr_state = env.reset()
         curr_state = np.reshape(curr_state, [1, state_size])  # Reshape for the DNN
         total_reward = 0  # Reset total_reward for the episode
         complete = False
-
         print(f'Episode {episode}')
 
         while not complete:
@@ -111,9 +111,9 @@ def train_iqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
                 experiences = memory_buffer.sample(batch_size)
                 agent.train(experiences)
 
+
             curr_state = nxt_state
             total_reward += curr_reward
-
         rewards.append(total_reward)
         print(f"Episode {episode + 1}: Total Reward = {total_reward}")
 
@@ -130,9 +130,9 @@ def train_iqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
         total_test_reward += curr_reward
         curr_state = nxt_state
     return rewards, agent
-git
 
-def test(agent, env, num_episodes=100):
+
+def test(agent, env, num_episodes=10):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -215,10 +215,22 @@ def visualize_training_results(rewards):
 
     plt.show()
 
+def visualize_epsilon_decay(agent, num_episodes=10):
+    epsilons = [agent.epsilon * (agent.epsilon_decay ** i) for i in range(num_episodes)]
+    plt.figure(figsize=(10, 5))
+    plt.plot(epsilons)
+    plt.title('Epsilon Decay over Episodes')
+    plt.xlabel('Episode')
+    plt.ylabel('Epsilon Value')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == '__main__':
     env = IDSEnvironment()
-    training_rewards, agent = train_iqn_agent(env)
+    training_rewards, agent= train_iqn_agent(env)
     visualize_training_results(training_rewards)
+    visualize_epsilon_decay(agent, 100)
     results, test_rewards = test(agent,env)
     # 1. Bar Plot for Metrics
     metrics = ['Average Reward', 'Accuracy', 'F1 Score', 'Precision', 'Recall']
@@ -244,5 +256,17 @@ if __name__ == '__main__':
     plt.show()
     visualize_training_results(training_rewards)
     print(results)
+
+    # Detection Rate and False Positive Rate
+    TP = results['Confusion Matrix'][1][1]
+    TN = results['Confusion Matrix'][0][0]
+    FP = results['Confusion Matrix'][0][1]
+    FN = results['Confusion Matrix'][1][0]
+
+    detection_rate = TP / (TP + FN)
+    false_positive_rate = FP / (FP + TN)
+
+    print(f'Detection Rate: {detection_rate}')
+    print(f'False Positive Rate: {false_positive_rate}')
 
 

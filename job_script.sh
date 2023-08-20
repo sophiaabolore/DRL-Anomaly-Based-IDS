@@ -21,12 +21,12 @@ module load /usr/local/bin/python3.9
 # put your command here
 python main.py
 
-python DQN.py
-
-python IQN.py
+#python DQN.py
+#
+#python IQN.py
 
 python QRDQN.py
 
-python C51.py
+#python C51.py
 
-cp -r ./results /Users/sophia/Downloads/DRL_IDS_experiment_results/
+cp -r ./results

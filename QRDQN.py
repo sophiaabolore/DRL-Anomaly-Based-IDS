@@ -92,7 +92,7 @@ class QRDQNAgent:
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
 
 
-def train_qrdqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
+def train_qrdqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -176,7 +176,7 @@ def train_qr_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=100):
+def test(agent, env, num_episodes=10):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
