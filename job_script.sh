@@ -1,19 +1,19 @@
 #!/bin/bash
-#SBATCH --job-name=DRL_for_IDS_experiments
+SBATCH --job-name=DRL_for_IDS_experiments
 
-#SBATCH --partition=t4v2,rtx6000,a40
+SBATCH --partition=t4v2,rtx6000,a40
 
-#SBATCH --gres=gpu:4
+SBATCH --gres=gpu:4
 
-#SBATCH --qos=normal
+SBATCH --qos=normal
 
-#SBATCH --cpus-per-task=4
+SBATCH --cpus-per-task=4
 
-#SBATCH --mem-per-cpu=32GB
+SBATCH --mem-per-cpu=32GB
 
-#SBATCH --output=slurm-%j.out
+SBATCH --output=slurm-%j.out
 
-#SBATCH --error=slurm-%j.err
+SBATCH --error=slurm-%j.err
 
 # prepare your environment here
 module load /usr/local/bin/python3.9
