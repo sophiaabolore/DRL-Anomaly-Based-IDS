@@ -1,7 +1,7 @@
-numpy==1.25.2
+numpy
 tensorflow==2.13.0rc2
-matplotlib==3.3.4
-sklearn==1.1.2
-seaborn==0.11.2
-gym==0.26.2
-pandas==1.1.5
+matplotlib
+sklearn
+seaborn
+gym
+pandas
