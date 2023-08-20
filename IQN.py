@@ -27,6 +27,8 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
         self.model = self._build_model()
 
     def _build_model(self):
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        tf.config.experimental.set_memory_growth(gpu, True)
         inputs = tf.keras.layers.Input(shape=(self.state_size,))
         tau_samples = tf.keras.backend.random_uniform(shape=(self.num_quantiles,), minval=0, maxval=1)
         tau_embed = tf.keras.layers.Embedding(input_dim=self.num_quantiles, output_dim=self.embedding_dim)(tau_samples)
