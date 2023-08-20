@@ -73,15 +73,11 @@ class IDSEnvironment(gym.Env):
         self.action_space = spaces.Discrete(2)
         self.state_space = 148  # This number is based on the real attributes from the dataset
         self.state = self.train_data.iloc[self.current_data_pointer, :-1].values
-        self.feature_mins = self.train_data.iloc[:, :-1].min().values
-        self.feature_maxs = self.train_data.iloc[:, :-1].max().values
 
     def discretize_state(self, state):
-        # Create bins based on actual data ranges
-        bins = [np.linspace(self.feature_mins[i], self.feature_maxs[i], 11)
-                for i in range(self.num_features)]
-        discretized_state = [discretize(state[i], bins[i])
-                             for i in range(self.num_features)]
+        # Define bins for each feature
+        bins = [np.linspace(0, 1, 11) for _ in range(self.num_features)]  # 10 bins for example
+        discretized_state = [discretize(state[i], bins[i]) for i in range(self.num_features)]
         return np.array(discretized_state)
 
     def step(self, curr_action):
@@ -97,7 +93,9 @@ class IDSEnvironment(gym.Env):
         # Move the data pointer
         self.current_data_pointer += 1
 
-        complete = self.current_data_pointer >= len(self.train_data)
+        # complete = self.current_data_pointer >= len(self.train_data)
+
+        complete = self.current_data_pointer >= 400
 
         return self.state, curr_reward, complete, {}
 
