@@ -149,13 +149,13 @@ def train_qr_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     memory_buffer = ReplayBuffer(capacity=1000)
 
     rewards = []
-
+    print("training")
     for episode in range(num_episodes):
         curr_state = env.reset()
         curr_state = np.reshape(curr_state, [1, state_size])
         total_reward = 0
         complete = False
-
+        print("episode: ", episode)
         while not complete:
             curr_action = agent.act(curr_state)
             nxt_state, curr_reward, complete, _ = env.step(curr_action)

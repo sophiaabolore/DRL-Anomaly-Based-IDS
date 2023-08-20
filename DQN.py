@@ -77,7 +77,7 @@ def train_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     memory_buffer = ReplayBuffer(capacity=1000)
 
     rewards = []
-
+    print("training")
     # Training
     for episode in range(num_episodes):
         curr_state = env.reset()
