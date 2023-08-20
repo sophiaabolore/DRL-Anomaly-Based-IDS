@@ -83,7 +83,7 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
                                          targets.reshape(-1, self.action_size * self.num_quantiles))
         return loss
 
-def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
+def train_iqn_agent(env, num_episodes=1000, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -132,7 +132,7 @@ def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=10):
+def test(agent, env, num_episodes=1000):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -215,7 +215,7 @@ def visualize_training_results(rewards):
 
     plt.show()
 
-def visualize_epsilon_decay(agent, num_episodes=10):
+def visualize_epsilon_decay(agent, num_episodes):
     epsilons = [agent.epsilon * (agent.epsilon_decay ** i) for i in range(num_episodes)]
     plt.figure(figsize=(10, 5))
     plt.plot(epsilons)
