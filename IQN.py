@@ -104,12 +104,12 @@ def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
 
         while not complete:
             curr_action = agent.act(curr_state)  # Decide action
+            print(curr_action)
             nxt_state, curr_reward, complete, _ = env.step(curr_action)  # Execute action
             nxt_state = np.reshape(nxt_state, [1, state_size])  # Reshape for the DNN
 
             # Store experience
             memory_buffer.add(curr_state, curr_action, curr_reward, nxt_state, complete)
-
             # Train the agent with a batch from the replay buffer
             if len(memory_buffer) > batch_size:
                 experiences = memory_buffer.sample(batch_size)
@@ -156,6 +156,7 @@ def test(agent, env, num_episodes=10):
         print(f'Episode {episode}')
         while not done:
             action = agent.act(state)  # Use the trained policy to select an action
+            print(action)
             next_state, reward, done, _ = env.step(action)
             true_label = env.train_data.iloc[
                 env.current_data_pointer - 1, -1]  # -1 since we've already moved the pointer in the env.step() method
