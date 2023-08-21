@@ -277,8 +277,8 @@ def visualize_training_results(rewards):
 
     plt.figure(figsize=(10, 5))
 
-    plt.plot(rewards, label='Episode Reward', alpha=0.6)
-    plt.plot(moving_avg, label='Moving Average (100 episodes)', color='red')
+    plt.plot(rewards, label='C51 Episode Reward', alpha=0.6)
+    plt.plot(moving_avg, label='C51 Moving Average (100 episodes)', color='red')
 
     plt.title("C51 Training Rewards over Episodes")
     plt.xlabel("Episode")
