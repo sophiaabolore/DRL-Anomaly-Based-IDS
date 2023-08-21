@@ -5,3 +5,4 @@ sklearn
 seaborn
 gym
 pandas
+scipy

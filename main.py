@@ -7,21 +7,35 @@ from typing import List, Optional, Dict, Any, Tuple
 import random
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-
+from scipy.io import arff
 
 def discretize(value, bins):
     return np.digitize(value, bins, right=True)
 
 def process_dataset():
-    train_data = pd.read_csv("NSL-KDD/KDDTrain+.txt", header=None)
-    test_data = pd.read_csv("NSL-KDD/KDDTest+.txt", header=None)
-    print("Before Scaling:", train_data.shape)
+    train_data_arff, meta_train = arff.loadarff("NSL-KDD/KDDTrain+.arff")
+    test_data_arff, meta_test = arff.loadarff("NSL-KDD/KDDTest+.arff")
+
+    # Convert ARFF data to pandas DataFrame
+    train_data = pd.DataFrame(train_data_arff)
+    test_data = pd.DataFrame(test_data_arff)
+
+    # Convert byte-strings to strings for all columns
+    for column in train_data.select_dtypes(include=[object]).columns:
+        train_data[column] = train_data[column].str.decode('utf-8')
+    for column in test_data.select_dtypes(include=[object]).columns:
+        test_data[column] = test_data[column].str.decode('utf-8')
+
     # 1. Handling Missing Values
     train_data.dropna(inplace=True)
     test_data.dropna(inplace=True)
+    anomaly_count = sum(train_data.iloc[:, -1] == 'normal')
+    normal_count = sum(train_data.iloc[:, -1] == 'anomaly')
+    print(train_data.iloc[:, -1])
+    print("total # of anomalies: ", anomaly_count)
+    print("total # of normals: ", normal_count)
 
     # 2. Normalize Numerical Features
-    # Note: You need to determine which columns are numerical. For the sake of example, let's assume columns 0 to 5 are numerical
     numerical_cols = [0, 4, 5, 7, 8, 9, 10, 12, 13, 14, 15, 16,
                       17, 18, 19, 22, 23, 24, 25, 26, 27, 28,
                       29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
@@ -32,16 +46,13 @@ def process_dataset():
 
     scaler = StandardScaler()
     train_data.iloc[:, numerical_cols] = scaler.fit_transform(train_data.iloc[:, numerical_cols])
-    print(train_data.iloc[:, numerical_cols].columns)
     test_data.iloc[:, numerical_cols] = scaler.fit_transform(test_data.iloc[:, numerical_cols])  # Use the same scaler on test data
-
 
     # Convert column indices to column names for categorical columns
     categorical_colnames = train_data.columns[categorical_cols].tolist()
-    print(categorical_colnames)
     # One-hot encode categorical features
     train_data = pd.get_dummies(train_data, columns=categorical_colnames)
-    test_data = pd.get_dummies(test_data, columns=categorical_colnames)
+    test_data = train_data
     # Get missing columns in the test set
     missing_cols = set(train_data.columns) - set(test_data.columns)
     # Add a missing column in the test set with default value equal to 0
@@ -86,7 +97,6 @@ class IDSEnvironment(gym.Env):
 
         # Actual label
         intrusion = self.train_data.iloc[self.current_data_pointer, -1]
-
         reward_base = 1 if curr_action == intrusion else -1
         curr_reward = np.random.normal(loc=reward_base, scale=0.1)  # 0.1 is the standard deviation
 
@@ -169,4 +179,4 @@ def visualize_training_results(rewards):
     plt.show()
 
 if __name__ == '__main__':
-    pass
+    process_dataset()
