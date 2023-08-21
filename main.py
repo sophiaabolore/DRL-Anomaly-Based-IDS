@@ -95,7 +95,7 @@ class IDSEnvironment(gym.Env):
 
         # complete = self.current_data_pointer >= len(self.train_data)
 
-        complete = self.current_data_pointer >= 400
+        complete = self.current_data_pointer >= 100
 
         return self.state, curr_reward, complete, {}
 
