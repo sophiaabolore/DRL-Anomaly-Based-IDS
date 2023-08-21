@@ -7,6 +7,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+SEEDS = [42, 101, 123, 254, 999]  # Example seed values
 class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functionalities are shared
     def __init__(self, state_size, action_size, num_quantiles=51, embedding_dim=64):
         # super().__init__(state_size, action_size, num_quantiles)
@@ -85,12 +86,13 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
                                          targets.reshape(-1, self.action_size * self.num_quantiles))
         return loss
 
-def train_iqn_agent(env, num_episodes=1000, batch_size=32, gamma=0.95):
+def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
     memory_buffer = ReplayBuffer(capacity=1000)
-
+    all_true_labels = []
+    all_predicted_labels = []
     rewards = []
     # Training
     for episode in range(num_episodes):
@@ -134,7 +136,7 @@ def train_iqn_agent(env, num_episodes=1000, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=1000):
+def test(agent, env, num_episodes=10):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -228,12 +230,32 @@ def visualize_epsilon_decay(agent, num_episodes):
     plt.tight_layout()
     plt.show()
 
+
 if __name__ == '__main__':
     env = IDSEnvironment()
-    training_rewards, agent= train_iqn_agent(env)
+
+    # Store results from all seeds
+    all_results = []
+    all_test_rewards = []
+    all_training_rewards = []
+
+    for seed in SEEDS:
+        np.random.seed(seed)
+        tf.random.set_seed(seed)
+        random.seed(seed)
+
+        training_rewards, agent = train_iqn_agent(env)
+        results, test_rewards = test(agent, env)
+
+        all_training_rewards.append(training_rewards)
+        all_test_rewards.append(test_rewards)
+        all_results.append(results)
+
+    # Averaging and other processing can be done on all_results, all_test_rewards, and all_training_rewards if needed.
+
     visualize_training_results(training_rewards)
     visualize_epsilon_decay(agent, 100)
-    results, test_rewards = test(agent,env)
+
     # 1. Bar Plot for Metrics
     metrics = ['Average Reward', 'Accuracy', 'F1 Score', 'Precision', 'Recall']
     values = [results[metric] for metric in metrics]
@@ -256,8 +278,6 @@ if __name__ == '__main__':
     plt.ylabel('Actual')
     plt.tight_layout()
     plt.show()
-    visualize_training_results(training_rewards)
-    print(results)
 
     # Detection Rate and False Positive Rate
     TP = results['Confusion Matrix'][1][1]
@@ -270,5 +290,3 @@ if __name__ == '__main__':
 
     print(f'Detection Rate: {detection_rate}')
     print(f'False Positive Rate: {false_positive_rate}')
-
-
