@@ -173,8 +173,8 @@ def test(agent, env, num_episodes=10):
     precision = precision_score(all_true_labels, all_predicted_labels)
     recall = recall_score(all_true_labels, all_predicted_labels)
     confusion = confusion_matrix(all_true_labels, all_predicted_labels)
-    print(all_true_labels)
-    print(all_predicted_labels)
+    print(sum(all_true_labels))
+    print(sum(all_predicted_labels))
     results = {
         'Average Reward': avg_reward,
         'Accuracy': accuracy,
