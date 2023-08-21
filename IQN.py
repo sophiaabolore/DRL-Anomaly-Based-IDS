@@ -82,8 +82,6 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
 
         self.model.train_on_batch(states,
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
-        loss = self.model.train_on_batch(states,
-                                         targets.reshape(-1, self.action_size * self.num_quantiles))
         return loss
 
 def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
@@ -104,7 +102,6 @@ def train_iqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
 
         while not complete:
             curr_action = agent.act(curr_state)  # Decide action
-            print(curr_action)
             nxt_state, curr_reward, complete, _ = env.step(curr_action)  # Execute action
             nxt_state = np.reshape(nxt_state, [1, state_size])  # Reshape for the DNN
 
@@ -156,7 +153,6 @@ def test(agent, env, num_episodes=10):
         print(f'Episode {episode}')
         while not done:
             action = agent.act(state)  # Use the trained policy to select an action
-            print(action)
             next_state, reward, done, _ = env.step(action)
             true_label = env.train_data.iloc[
                 env.current_data_pointer - 1, -1]  # -1 since we've already moved the pointer in the env.step() method
@@ -177,7 +173,8 @@ def test(agent, env, num_episodes=10):
     precision = precision_score(all_true_labels, all_predicted_labels)
     recall = recall_score(all_true_labels, all_predicted_labels)
     confusion = confusion_matrix(all_true_labels, all_predicted_labels)
-
+    print(all_true_labels)
+    print(all_predicted_labels)
     results = {
         'Average Reward': avg_reward,
         'Accuracy': accuracy,
