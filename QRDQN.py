@@ -92,7 +92,7 @@ class QRDQNAgent:
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
 
 
-def train_qrdqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
+def train_qrdqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -142,7 +142,7 @@ def train_qrdqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
         curr_state = nxt_state
     return rewards, agent
 
-def train_qr_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
+def train_qr_dqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -176,7 +176,7 @@ def train_qr_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=10):
+def test(agent, env, num_episodes=250):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -250,7 +250,7 @@ def visualize_training_results(rewards):
     plt.plot(rewards, label='Episode Reward', alpha=0.6)
     plt.plot(moving_avg, label='Moving Average (100 episodes)', color='red')
 
-    plt.title("Training Rewards over Episodes")
+    plt.title("QRDQN Training Rewards over Episodes")
     plt.xlabel("Episode")
     plt.ylabel("Reward")
     plt.legend()
@@ -271,7 +271,7 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 5))
     plt.bar(metrics, values, color=['blue', 'green', 'red', 'purple', 'orange'])
     plt.ylabel('Value')
-    plt.title('Metrics Visualization')
+    plt.title('QRDQN Metrics Visualization')
     plt.ylim([0, 1])
     for i, v in enumerate(values):
         plt.text(i, v + 0.01, f"{v:.2f}", ha='center', va='bottom', fontsize=10)
@@ -281,7 +281,7 @@ if __name__ == '__main__':
     # 2. Heatmap for Confusion Matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(results['Confusion Matrix'], annot=True, cmap="YlGnBu", fmt='g')
-    plt.title('Confusion Matrix')
+    plt.title('QRDQN Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.tight_layout()

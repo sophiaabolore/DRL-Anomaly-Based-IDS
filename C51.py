@@ -151,7 +151,7 @@ class C51Agent(DQNAgent):
 
 
 
-def train_c51_agent(env, num_episodes=10, batch_size=32, gamma=0.95, use_prioritized_replay=True):
+def train_c51_agent(env, num_episodes=250, batch_size=32, gamma=0.95, use_prioritized_replay=True):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
 
@@ -212,7 +212,7 @@ def train_c51_agent(env, num_episodes=10, batch_size=32, gamma=0.95, use_priorit
 
 
 # The test function remains largely unchanged.
-def test_c51_agent(agent, env, num_episodes=100):
+def test_c51_agent(agent, env, num_episodes=250):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -280,7 +280,7 @@ def visualize_training_results(rewards):
     plt.plot(rewards, label='Episode Reward', alpha=0.6)
     plt.plot(moving_avg, label='Moving Average (100 episodes)', color='red')
 
-    plt.title("Training Rewards over Episodes")
+    plt.title("C51 Training Rewards over Episodes")
     plt.xlabel("Episode")
     plt.ylabel("Reward")
     plt.legend()
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 5))
     plt.bar(metrics, values, color=['blue', 'green', 'red', 'purple', 'orange'])
     plt.ylabel('Value')
-    plt.title('Metrics Visualization')
+    plt.title('C51 Metrics Visualization')
     plt.ylim([0, 1])
     for i, v in enumerate(values):
         plt.text(i, v + 0.01, f"{v:.2f}", ha='center', va='bottom', fontsize=10)
@@ -313,7 +313,8 @@ if __name__ == '__main__':
     # 2. Heatmap for Confusion Matrix
     plt.figure(figsize=(8, 6))
     sns.heatmap(results['Confusion Matrix'], annot=True, cmap="YlGnBu", fmt='g')
-    plt.title('Confusion Matrix')
+    plt.title('C51 '
+              'Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.tight_layout()
