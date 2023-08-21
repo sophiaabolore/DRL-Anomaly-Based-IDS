@@ -92,57 +92,7 @@ class QRDQNAgent:
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
 
 
-def train_qrdqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
-    state_size = env.observation_space.shape[0]
-    action_size = env.action_space.n
-    agent = QRDQNAgent(state_size, action_size)
-    memory_buffer = ReplayBuffer(capacity=1000)
-
-    rewards = []
-
-    # Training
-    for episode in range(num_episodes):
-        curr_state = env.reset()
-        curr_state = np.reshape(curr_state, [1, state_size])  # Reshape for the DNN
-        total_reward = 0  # Reset total_reward for the episode
-        complete = False
-
-        print(f'Episode {episode}')
-
-        while not complete:
-            curr_action = agent.act(curr_state)  # Decide action
-            nxt_state, curr_reward, complete, _ = env.step(curr_action)  # Execute action
-            nxt_state = np.reshape(nxt_state, [1, state_size])  # Reshape for the DNN
-
-            # Store experience
-            memory_buffer.add(curr_state, curr_action, curr_reward, nxt_state, complete)
-
-            # Train the agent with a batch from the replay buffer
-            if len(memory_buffer) > batch_size:
-                experiences = memory_buffer.sample(batch_size)
-                agent.train(experiences)
-
-            curr_state = nxt_state
-            total_reward += curr_reward
-
-        rewards.append(total_reward)
-        print(f"Episode {episode + 1}: Total Reward = {total_reward}")
-
-    # Evaluation
-    total_test_reward = 0
-    curr_state = env.reset()
-    curr_state = np.reshape(curr_state, [1, state_size])  # Reshape for the DNN
-    complete = False
-
-    while not complete:
-        curr_action = agent.act(curr_state)  # Use act method for evaluation
-        nxt_state, curr_reward, complete, _ = env.step(curr_action)
-        nxt_state = np.reshape(nxt_state, [1, state_size])  # Reshape for the DNN
-        total_test_reward += curr_reward
-        curr_state = nxt_state
-    return rewards, agent
-
-def train_qr_dqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
+def train_qr_dqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -176,7 +126,7 @@ def train_qr_dqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=250):
+def test(agent, env, num_episodes=100):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -198,7 +148,7 @@ def test(agent, env, num_episodes=250):
             action = agent.act(state)  # Use the trained policy to select an action
             next_state, reward, done, _ = env.step(action)
             true_label = env.train_data.iloc[
-                env.current_data_pointer - 1, -1]  # -1 since we've already moved the pointer in the env.step() method
+                env.current_data_pointer - 1, -1]
             episode_reward += reward
             state = next_state
 
@@ -288,5 +238,6 @@ if __name__ == '__main__':
     plt.show()
     visualize_training_results(training_rewards)
     print(results)
+
 
 

@@ -12,11 +12,11 @@
 # prepare your environment here
 module load /usr/local/bin/python3.9
 
-# Use srun to run the python scripts concurrently
-srun --ntasks=1 python main.py &
-srun --ntasks=1 python IQN.py &
-srun --ntasks=1 python QRDQN.py &
-srun --ntasks=1 python C51.py &
+#  run the python scripts concurrently
+python main.py
+python QRDQN.py
+python IQN.py
+python C51.py
 
 # Wait for all background jobs to complete before proceeding
 wait

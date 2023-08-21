@@ -13,6 +13,7 @@ import seaborn as sns
 class PrioritizedReplayBuffer:
     def __init__(self, capacity=10000, alpha=0.6, beta=0.4, beta_increment=0.001):
         self.capacity = capacity
+        self.capacity = capacity
         self.alpha = alpha
         self.beta = beta
         self.beta_increment = beta_increment
@@ -151,7 +152,7 @@ class C51Agent(DQNAgent):
 
 
 
-def train_c51_agent(env, num_episodes=250, batch_size=32, gamma=0.95, use_prioritized_replay=True):
+def train_c51_agent(env, num_episodes=100, batch_size=32, gamma=0.95, use_prioritized_replay=True):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
 
@@ -212,7 +213,7 @@ def train_c51_agent(env, num_episodes=250, batch_size=32, gamma=0.95, use_priori
 
 
 # The test function remains largely unchanged.
-def test_c51_agent(agent, env, num_episodes=250):
+def test_c51_agent(agent, env, num_episodes=100):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 

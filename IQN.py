@@ -8,7 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 SEEDS = [42, 101, 123, 254, 999]  # Example seed values
-class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functionalities are shared
+class IQNAgent(QRDQNAgent):
     def __init__(self, state_size, action_size, num_quantiles=51, embedding_dim=64):
         # super().__init__(state_size, action_size, num_quantiles)
         self.state_size = state_size
@@ -51,7 +51,6 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
 
-        # Here, we need to estimate the quantile function for each action and take the mean over quantiles
         action_values = [np.mean(self.model.predict(state, verbose=0)) for _ in range(self.num_quantiles)]
         return np.argmax(action_values)  # returns action
 
@@ -82,9 +81,8 @@ class IQNAgent(QRDQNAgent):  # We can inherit from QRDQNAgent as many functional
 
         self.model.train_on_batch(states,
                                   targets.reshape(-1, self.action_size * self.num_quantiles))
-        return loss
 
-def train_iqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
+def train_iqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = QRDQNAgent(state_size, action_size)
@@ -133,7 +131,7 @@ def train_iqn_agent(env, num_episodes=250, batch_size=32, gamma=0.95):
     return rewards, agent
 
 
-def test(agent, env, num_episodes=250):
+def test(agent, env, num_episodes=100):
     """
     Test a DQNAgent on a given environment and compute classification metrics.
 
@@ -155,7 +153,7 @@ def test(agent, env, num_episodes=250):
             action = agent.act(state)  # Use the trained policy to select an action
             next_state, reward, done, _ = env.step(action)
             true_label = env.train_data.iloc[
-                env.current_data_pointer - 1, -1]  # -1 since we've already moved the pointer in the env.step() method
+                env.current_data_pointer - 1, -1]
             episode_reward += reward
             state = next_state
 
@@ -248,8 +246,6 @@ if __name__ == '__main__':
         all_training_rewards.append(training_rewards)
         all_test_rewards.append(test_rewards)
         all_results.append(results)
-
-    # Averaging and other processing can be done on all_results, all_test_rewards, and all_training_rewards if needed.
 
     visualize_training_results(training_rewards)
     visualize_epsilon_decay(agent, 100)

@@ -41,7 +41,6 @@ def process_dataset():
                       29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
 
     # 3. Convert Categorical Features
-    # Again, you need to determine which columns are categorical. For example, let's assume columns 6 and 7 are categorical
     categorical_cols = [1, 2, 3, 6, 11, 20, 21, 41]
 
     scaler = StandardScaler()
@@ -58,9 +57,8 @@ def process_dataset():
     # Add a missing column in the test set with default value equal to 0
     for c in missing_cols:
         test_data[c] = 0
-    # Ensure the order of column in the test set is in the same order than in train set
+
     test_data = test_data[train_data.columns]
-    # Alternatively, you can use LabelEncoder if you prefer label encoding
     # for col in categorical_cols:
     #     le = LabelEncoder()
     #     train_data[col] = le.fit_transform(train_data[col])
@@ -82,7 +80,7 @@ class IDSEnvironment(gym.Env):
 
         # Define action space (binary decision for now: alert vs. no alert)
         self.action_space = spaces.Discrete(2)
-        self.state_space = 148  # This number is based on the real attributes from the dataset
+        self.state_space = 148
         self.state = self.train_data.iloc[self.current_data_pointer, :-1].values
 
     def discretize_state(self, state):
@@ -92,7 +90,6 @@ class IDSEnvironment(gym.Env):
         return np.array(discretized_state)
 
     def step(self, curr_action):
-        # Use the actual data features as state
         self.state = self.discretize_state(self.train_data.iloc[self.current_data_pointer, :-1].values)
 
         # Actual label

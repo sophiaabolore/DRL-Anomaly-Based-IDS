@@ -70,7 +70,7 @@ class DQNAgent:
         self.model.train_on_batch(states, q_values)
 
 
-def train_dqn_agent(env, num_episodes=10, batch_size=32, gamma=0.95):
+def train_dqn_agent(env, num_episodes=100, batch_size=32, gamma=0.95):
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = DQNAgent(state_size, action_size)
@@ -143,7 +143,7 @@ def test(agent, env, num_episodes=10):
             action = agent.act(state)  # Use the trained policy to select an action
             next_state, reward, done, _ = env.step(action)
             true_label = env.train_data.iloc[
-                env.current_data_pointer - 1, -1]  # -1 since we've already moved the pointer in the env.step() method
+                env.current_data_pointer - 1, -1]
             episode_reward += reward
             state = next_state
 
